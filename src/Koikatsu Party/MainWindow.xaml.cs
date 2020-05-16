@@ -190,6 +190,27 @@ namespace InitSetting
             // Mod settings
 
 
+            var sfwPath = Path.Combine(m_strCurrentDir, @"BepInEx\patchers\KK_SFW_Patcher.dll");
+            if (File.Exists(sfwPath))
+            {
+                var sfwConfig = Path.Combine(m_strCurrentDir, @"BepInEx\config\KK_SFW.cfg");
+                var content = File.Exists(sfwConfig) ? File.ReadAllText(sfwConfig) : "";
+                toggleSFW.IsChecked = content.Contains("Disable NSFW content = true");
+                toggleSFW.Checked += (sender, args) =>
+                {
+                    File.Delete(sfwConfig);
+                    File.WriteAllText(sfwConfig, "[General]\n\nDisable NSFW content = true");
+                };
+                toggleSFW.Unchecked += (sender, args) =>
+                {
+                    File.Delete(sfwConfig);
+                    File.WriteAllText(sfwConfig, "[General]\n\nDisable NSFW content = false");
+                };
+            }
+            else
+            {
+                toggleSFW.Visibility = Visibility.Collapsed;
+            }
 
             startup = false;
 
@@ -332,7 +353,7 @@ namespace InitSetting
 
             // Do checks
 
-            
+
 
             is64bitOS = Is64BitOS();
             isStudio = File.Exists(m_strCurrentDir + m_strStudioExe);
@@ -451,7 +472,7 @@ namespace InitSetting
             SetEnableAndVisible();
 
             string path = m_strCurrentDir + m_strSaveDir;
-        CheckConfigFile:
+            CheckConfigFile:
             if (File.Exists(path))
             {
                 try
@@ -508,7 +529,7 @@ namespace InitSetting
 
         void SetEnableAndVisible()
         {
-            
+
         }
 
         void SaveRegistry()
@@ -641,7 +662,7 @@ namespace InitSetting
             string manualLANG = $"{m_strCurrentDir}\\manual\\manual_{lang}.html";
             string manualJA = m_strCurrentDir + m_strManualDir;
 
-            if(File.Exists(manualEN) || File.Exists(manualLANG) || File.Exists(manualJA))
+            if (File.Exists(manualEN) || File.Exists(manualLANG) || File.Exists(manualJA))
             {
                 if (File.Exists(manualLANG))
                     Process.Start(manualLANG);
@@ -1339,7 +1360,7 @@ namespace InitSetting
             string argloc = updated;
             string args = $"{argdir} {argloc}";
 
-            if(!updatelocExists)
+            if (!updatelocExists)
                 args = $"{argdir}";
 
             if (File.Exists(text))
@@ -1647,7 +1668,7 @@ namespace InitSetting
 
         private void HoneyPotInspector_Run(object sender, RoutedEventArgs e)
         {
-            if(File.Exists($"{m_strCurrentDir}\\HoneyPot\\HoneyPotInspector.exe"))
+            if (File.Exists($"{m_strCurrentDir}\\HoneyPot\\HoneyPotInspector.exe"))
             {
                 Process.Start($"{m_strCurrentDir}\\HoneyPot\\HoneyPotInspector.exe");
             }
@@ -1671,7 +1692,7 @@ namespace InitSetting
 
         private void dhh_Unchecked(object sender, RoutedEventArgs e)
         {
-            if(File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\DHH_AI4.dll"))
+            if (File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\DHH_AI4.dll"))
             {
                 if (File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\DHH_AI4.dl_"))
                 {

@@ -171,21 +171,26 @@ namespace InitSetting
 
             // Mod settings
 
-            if (File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\Stiletto.dll"))
+            var sfwPath = Path.Combine(m_strCurrentDir, @"BepInEx\patchers\KK_SFW_Patcher.dll");
+            if (File.Exists(sfwPath))
             {
-                toggleStiletto.IsChecked = true;
+                var sfwConfig = Path.Combine(m_strCurrentDir, @"BepInEx\config\KK_SFW.cfg");
+                var content = File.Exists(sfwConfig) ? File.ReadAllText(sfwConfig) : "";
+                toggleSFW.IsChecked = content.Contains("Disable NSFW content = true");
+                toggleSFW.Checked += (sender, args) =>
+                {
+                    File.Delete(sfwConfig);
+                    File.WriteAllText(sfwConfig, "[General]\n\nDisable NSFW content = true");
+                };
+                toggleSFW.Unchecked += (sender, args) =>
+                {
+                    File.Delete(sfwConfig);
+                    File.WriteAllText(sfwConfig, "[General]\n\nDisable NSFW content = false");
+                };
             }
-            if (!File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\Stiletto.dl_") && !File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\Stiletto.dll"))
+            else
             {
-                toggleStiletto.IsEnabled = false;
-            }
-            if (File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\RimRemover.dll"))
-            {
-                toggleRimRemover.IsChecked = true;
-            }
-            if (!File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\RimRemover.dl_") && !File.Exists($"{m_strCurrentDir}\\BepInEx\\Plugins\\RimRemover.dll"))
-            {
-                toggleRimRemover.IsEnabled = false;
+                toggleSFW.Visibility = Visibility.Collapsed;
             }
 
 
