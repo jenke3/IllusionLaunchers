@@ -269,7 +269,7 @@ namespace InitSetting
             //}
 
             // Translations
-            if (lang == "zh-CN") // By @Madevil#1103 & @𝐄𝐀𝐑𝐓𝐇𝐒𝐇𝐈𝐏 💖#4313 
+            if(lang == "zh-CNT") // By @Madevil#1103 & @𝐄𝐀𝐑𝐓𝐇𝐒𝐇𝐈𝐏 💖#4313 
             {
                 labelTranslated.Visibility = Visibility.Visible;
                 labelTranslatedBorder.Visibility = Visibility.Visible;
@@ -307,7 +307,7 @@ namespace InitSetting
                 // KK exclusive
                 toggleFont.Content = "變更字型";
             }
-            else if (lang == "zh-TW") // By @𝐄𝐀𝐑𝐓𝐇𝐒𝐇𝐈𝐏 💖#4313 
+            else if (lang == "zh-CN") // By @𝐄𝐀𝐑𝐓𝐇𝐒𝐇𝐈𝐏 💖#4313 
             {
                 labelTranslated.Visibility = Visibility.Visible;
                 labelTranslatedBorder.Visibility = Visibility.Visible;
@@ -447,10 +447,10 @@ namespace InitSetting
             m_Setting.FullScreen = false;
             if (lang == "en")
                 m_Setting.Language = 1;
-            if (lang == "zh-CNT")
-                m_Setting.Language = 2;
-            if (lang == "zh-CN")
+            else if (lang == "zh-CN")
                 m_Setting.Language = 3;
+            else if (lang == "zh-CNT")
+                m_Setting.Language = 2;
             if (num == 2)
             {
                 dropDisplay.Items.Add(s_primarydisplay);
@@ -1380,7 +1380,7 @@ namespace InitSetting
         }
         void langTaiwanese(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            ChangeTL("zh-TW");
+            ChangeTL("zh-CNT");
         }
 
         void ChangeTL(string language)
@@ -1395,11 +1395,11 @@ namespace InitSetting
             }
             if (language == "zh-CN")
             {
-                m_Setting.Language = 2;
-            }
-            if (language == "zh-TW")
-            {
                 m_Setting.Language = 3;
+            }
+            if (language == "zh-CNT")
+            {
+                m_Setting.Language = 2;
             }
             saveConfigFile(m_strCurrentDir + m_strSaveDir);
             SaveRegistry();
@@ -1427,7 +1427,7 @@ namespace InitSetting
                             helvete(language);
                         }
                         return;
-                    case "zh-TW":
+                    case "zh-CNT":
                         if (System.Windows.MessageBox.Show("您是否希望游戏中的语言反映这项语言选择？", "问题", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                         {
                             disableXUA();
