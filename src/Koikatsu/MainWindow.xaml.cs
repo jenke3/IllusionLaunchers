@@ -1565,7 +1565,8 @@ namespace InitSetting
 
         void ChangeTL(string language)
         {
-            deactivateTL(1);
+            saveConfigFile(m_strCurrentDir + m_strSaveDir);
+            SaveRegistry();
             WriteLangIni(language);
             SetupLang(language);
         }
@@ -1574,13 +1575,39 @@ namespace InitSetting
         {
             if (File.Exists(m_strCurrentDir + "BepInEx/Config/AutoTranslatorConfig.ini"))
             {
-                if (System.Windows.MessageBox.Show("Do you want the ingame language to reflect this language choice?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                switch (language)
                 {
-                    helvete(language);
+                    case "ja":
+                        if (System.Windows.MessageBox.Show("ゲームにこの言語の選択を反映させたいですか？", "質問", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            disableXUA();
+                            helvete(language);
+                        }
+                        return;
+                    case "zh-CN":
+                        if (System.Windows.MessageBox.Show("您是否希望遊戲中的語言反映這項語言選擇？", "問題", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            enableXUA();
+                            helvete(language);
+                        }
+                        return;
+                    case "zh-CNT":
+                        if (System.Windows.MessageBox.Show("您是否希望游戏中的语言反映这项语言选择？", "问题", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            enableXUA();
+                            helvete(language);
+                        }
+                        return;
+                    default:
+                        if (System.Windows.MessageBox.Show("Do you want the ingame language to reflect this language choice?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                        {
+                            enableXUA();
+                            helvete(language);
+                        }
+                        return;
                 }
                 // Borrowed from Marco
             }
-            //MessageBox.Show($"{curAutoTLOut}", "Debug");
         }
 
         void helvete(string language)
@@ -1621,42 +1648,78 @@ namespace InitSetting
             }
         }
 
-        void deactivateTL(int i)
+        void enableXUA()
         {
-            s_EnglishTL = new string[]
+            if (File.Exists("BepInEx/Config/AutoTranslatorConfig.ini"))
             {
-                "BepInEx/XUnity.AutoTranslator.Plugin.BepIn",
-                "BepInEx/XUnity.AutoTranslator.Plugin.Core",
-                "BepInEx/XUnity.AutoTranslator.Plugin.ExtProtocol",
-                "BepInEx/XUnity.RuntimeHooker.Core",
-                "BepInEx/XUnity.RuntimeHooker",
-                "BepInEx/KK_Subtitles",
-                "BepInEx/ExIni"
-            };
+                var ud = Path.Combine(m_strCurrentDir, @"BepInEx/Config/AutoTranslatorConfig.ini");
 
-            if (i == 0)
-            {
-                foreach (var file in s_EnglishTL)
+                try
                 {
-                    if (File.Exists(m_strCurrentDir + file + ".dll"))
+                    var contents = File.ReadAllLines(ud).ToList();
+
+                    var setToLanguage = contents.FindIndex(s => s.ToLower().Contains("[Service]".ToLower()));
+                    if (setToLanguage >= 0)
                     {
-                        File.Move(m_strCurrentDir + file + ".dll", m_strCurrentDir + file + "._ll");
+                        var i = contents.FindIndex(setToLanguage, s => s.StartsWith("Endpoint"));
+                        if (i > setToLanguage)
+                            contents[i] = $"Endpoint=GoogleTranslate";
+                        else
+                        {
+                            contents.Insert(setToLanguage + 1, $"Endpoint=");
+                        }
                     }
+                    else
+                    {
+                        contents.Add("");
+                        contents.Add("[Service]");
+                        contents.Add($"Endpoint=GoogleTranslate");
+                    }
+
+                    File.WriteAllLines(ud, contents.ToArray());
                 }
-            }
-            else
-            {
-                foreach (var file in s_EnglishTL)
+                catch (Exception e)
                 {
-                    if (File.Exists(m_strCurrentDir + file + "._ll"))
-                    {
-                        File.Move(m_strCurrentDir + file + "._ll", m_strCurrentDir + file + ".dll");
-                    }
-                    helvete("en");
+                    MessageBox.Show("Something went wrong: " + e);
                 }
             }
         }
+        void disableXUA()
+        {
+            if (File.Exists("BepInEx/Config/AutoTranslatorConfig.ini"))
+            {
+                var ud = Path.Combine(m_strCurrentDir, @"BepInEx/Config/AutoTranslatorConfig.ini");
 
+                try
+                {
+                    var contents = File.ReadAllLines(ud).ToList();
+
+                    var setToLanguage = contents.FindIndex(s => s.ToLower().Contains("[Service]".ToLower()));
+                    if (setToLanguage >= 0)
+                    {
+                        var i = contents.FindIndex(setToLanguage, s => s.StartsWith("Endpoint"));
+                        if (i > setToLanguage)
+                            contents[i] = $"Endpoint=";
+                        else
+                        {
+                            contents.Insert(setToLanguage + 1, $"Endpoint=");
+                        }
+                    }
+                    else
+                    {
+                        contents.Add("");
+                        contents.Add("[Service]");
+                        contents.Add($"Endpoint=");
+                    }
+
+                    File.WriteAllLines(ud, contents.ToArray());
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show("Something went wrong: " + e);
+                }
+            }
+        }
         void SetupLang(string langstring)
         {
             if (File.Exists(m_strCurrentDir + m_customDir + decideLang))
