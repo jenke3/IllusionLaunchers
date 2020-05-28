@@ -1489,32 +1489,13 @@ namespace InitSetting
             saveConfigFile(m_strCurrentDir + m_strSaveDir);
             SaveRegistry();
 
-            string marcofix = m_strCurrentDir.TrimEnd('\\', '/', ' ');
-            kkman = kkman.TrimEnd('\\', '/', ' ');
-            string finaldir;
-
-            if (!File.Exists($@"{kkman}\StandaloneUpdater.exe"))
+            try
             {
-                finaldir = $@"{m_strCurrentDir}{kkman}";
+                Process.Start(new ProcessStartInfo(Path.Combine(m_strCurrentDir, @"[UTILITY] KKManager\StandaloneUpdater.exe"), $"\"{m_strCurrentDir.TrimEnd('\\', '/', ' ')}\"") { WorkingDirectory = $@"{Path.Combine(m_strCurrentDir, @"[UTILITY] KKManager")}" });
             }
-            else
+            catch (Exception exception)
             {
-                finaldir = kkman;
-            }
-
-            string text = $@"{finaldir}\StandaloneUpdater.exe";
-
-            string argdir = $"\u0022{marcofix}\u0022";
-            string argloc = updated;
-            string args = $"{argdir} {argloc}";
-
-            if(!updatelocExists)
-                args = $"{argdir}";
-
-            if (File.Exists(text))
-            {
-                Process.Start(new ProcessStartInfo(text) { WorkingDirectory = $@"{finaldir}", Arguments = args });
-                return;
+                MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
