@@ -320,6 +320,11 @@ namespace InitSetting
             EnvironmentHelper.SetLanguage("no-NB");
         }
 
+        private void LangHungarian(object sender, MouseButtonEventArgs e)
+        {
+            EnvironmentHelper.SetLanguage("hu-HU");
+        }
+
         #endregion
 
         #region Directory open buttons
