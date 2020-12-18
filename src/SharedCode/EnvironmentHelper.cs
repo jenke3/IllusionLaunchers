@@ -184,6 +184,10 @@ namespace InitSetting
                         LangQ_a = "Ønsker du å endre språket i spillet også?";
                         LangQ_b = "Spørsmål";
                         break;
+                    case "hu-HU":
+                        LangQ_a = "Ez a nyelv legyen a játék alap nyelve?";
+                        LangQ_b = "Kérdés";
+                        break;
                     default:
                         LangQ_a = "Do you want to set the ingame language to the selected language as well?";
                         LangQ_b = "Question";
